@@ -3,296 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rúbrica digital · Evaluación de postulantes a posgrado</title>
+<title>Rúbrica digital · Admisión a posgrado (demo)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --rojo:#b3123a; --rojo-2:#8e0e2e; --tinta:#1d2430; --gris:#5b6573;
-    --linea:#e6e8ec; --fondo:#f5f6f8; --tarjeta:#ffffff;
-    --verde:#1f8a4c; --ambar:#b8860b; --gris-rec:#7a8595;
-    --sombra:0 1px 3px rgba(20,30,50,.07),0 6px 18px rgba(20,30,50,.06);
+    --rojo:#C8102E; --rojo-2:#A00D25; --tinta:#1A1A1A; --gris:#6b7280;
+    --linea:#ececef; --fondo:#F5F5F5; --tarjeta:#ffffff;
+    --verde:#10b981; --azul:#3b82f6; --ambar:#f59e0b; --rojoV:#ef4444; --morado:#a855f7;
+    --sombra:0 1px 3px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.05);
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     color:var(--tinta);background:var(--fondo);line-height:1.45}
-  header.top{background:var(--tarjeta);border-bottom:1px solid var(--linea);padding:16px 24px;
-    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .marca{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--rojo),var(--rojo-2));
-    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;letter-spacing:.5px}
-  header.top h1{font-size:17px;margin:0;font-weight:650}
-  header.top p{margin:2px 0 0;font-size:12.5px;color:var(--gris)}
-  .pill{margin-left:auto;background:#fff4f6;color:var(--rojo);border:1px solid #f3c9d4;
-    font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px}
-  .controles{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;padding:16px 24px 6px}
-  .campo label{display:block;font-size:11.5px;color:var(--gris);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
-  .campo select,.campo input{font:inherit;font-size:14px;padding:8px 11px;border:1px solid var(--linea);
-    border-radius:8px;background:#fff;min-width:230px;color:var(--tinta)}
-  .tabs{margin-left:auto;display:flex;gap:6px;background:#eceef2;padding:4px;border-radius:10px}
-  .tabs button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--gris);
-    padding:7px 14px;border-radius:7px;cursor:pointer}
-  .tabs button.activo{background:#fff;color:var(--tinta);box-shadow:var(--sombra)}
-  .layout{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:14px 24px 40px;align-items:start}
-  @media(max-width:840px){.layout{grid-template-columns:1fr}}
-  .panel{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;box-shadow:var(--sombra)}
-  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--gris);
-    margin:0;padding:15px 18px;border-bottom:1px solid var(--linea)}
-  .lista{display:flex;flex-direction:column}
-  .post{display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--linea);
-    cursor:pointer;transition:background .12s}
-  .post:last-child{border-bottom:0}
-  .post:hover{background:#fafbfc}
-  .post.sel{background:#fdeef2;box-shadow:inset 3px 0 0 var(--rojo)}
-  .post .info{flex:1;min-width:0}
-  .post .nom{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .post .prog{font-size:12px;color:var(--gris);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .badge{font-size:13px;font-weight:700;padding:3px 9px;border-radius:7px;min-width:42px;text-align:center}
-  .b-ok{background:#e7f5ed;color:var(--verde)} .b-cond{background:#fbf3e0;color:var(--ambar)} .b-no{background:#fdecec;color:var(--rojo)} .b-na{background:#eef0f3;color:var(--gris-rec)}
-  .cuerpo{padding:20px 22px}
-  .enc-post{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-  .enc-post h3{margin:0;font-size:20px}
-  .enc-post .prog2{color:var(--gris);font-size:14px}
-  .crit{border:1px solid var(--linea);border-radius:11px;margin-top:16px;overflow:hidden}
-  .crit-fila{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px 16px;border-bottom:1px solid var(--linea)}
-  .crit-fila:last-child{border-bottom:0}
-  .crit-fila .titulo{font-weight:600;font-size:14.5px}
-  .crit-fila .peso{font-size:12px;color:var(--gris);margin-top:2px}
-  .escala{display:flex;gap:6px}
-  .escala button{width:34px;height:34px;border:1px solid var(--linea);background:#fff;border-radius:8px;
-    font:inherit;font-weight:600;font-size:14px;color:var(--gris);cursor:pointer;transition:.1s}
-  .escala button:hover{border-color:#c9ccd2}
-  .escala button.on{background:var(--rojo);border-color:var(--rojo);color:#fff}
-  .coment{grid-column:1/-1;margin-top:10px}
-  .coment textarea{width:100%;font:inherit;font-size:13.5px;padding:9px 11px;border:1px solid var(--linea);
-    border-radius:8px;resize:vertical;min-height:42px;color:var(--tinta)}
-  .resumen{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:20px;padding:16px 18px;
-    background:#fafbfc;border:1px solid var(--linea);border-radius:12px}
-  .total{font-size:34px;font-weight:750;line-height:1}
-  .total small{font-size:15px;color:var(--gris);font-weight:600}
-  .rec{font-size:14px;font-weight:700;padding:7px 14px;border-radius:9px}
-  .acciones{margin-left:auto;display:flex;gap:9px}
-  .btn{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--linea);background:#fff;
-    padding:9px 15px;border-radius:9px;cursor:pointer;color:var(--tinta)}
-  .btn.primario{background:var(--rojo);border-color:var(--rojo);color:#fff}
+  button{font-family:inherit;cursor:pointer}
+  .ibero{background:var(--rojo);color:#fff;font-weight:800;border-radius:10px;padding:7px 11px;letter-spacing:1px;display:inline-block}
+  .demo-pill{background:#fff4f6;color:var(--rojo);border:1px solid #f3c9d4;font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .login-card{background:#fff;border:1px solid var(--linea);border-radius:32px;box-shadow:var(--sombra);width:100%;max-width:430px;padding:34px}
+  .login-card h1{font-size:21px;font-weight:600;margin:14px 0 2px;letter-spacing:-.3px}
+  .login-card .sub{color:var(--gris);font-size:13px;margin:0 0 22px}
+  label.lbl{display:block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#9aa0aa;margin:0 0 6px 2px}
+  select,input,textarea{font:inherit;width:100%;background:#f4f4f6;border:1px solid transparent;border-radius:14px;
+    padding:12px 14px;color:var(--tinta);outline:none;transition:.12s}
+  select:focus,input:focus,textarea:focus{border-color:#d7d9de;background:#fff}
+  .field{margin-bottom:14px}
+  .btn{border:1px solid var(--linea);background:#fff;border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;color:var(--tinta);transition:.12s}
   .btn:hover{filter:brightness(.98)}
-  table.delib{width:100%;border-collapse:collapse;font-size:14px}
-  table.delib th,table.delib td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--linea)}
-  table.delib th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)}
-  table.delib tr:last-child td{border-bottom:0}
-  .barra{height:7px;background:#eceef2;border-radius:5px;overflow:hidden;min-width:90px}
-  .barra span{display:block;height:100%;background:var(--rojo)}
-  .modal-bg{position:fixed;inset:0;background:rgba(20,28,42,.45);display:none;align-items:center;
-    justify-content:center;padding:20px;z-index:50}
-  .modal-bg.abierto{display:flex}
-  .modal{background:#fff;border-radius:14px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-  .modal h3{margin:0;padding:18px 20px;border-bottom:1px solid var(--linea);font-size:16px}
-  .modal .m-cuerpo{padding:18px 20px}
-  .modal textarea{width:100%;height:230px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;
-    border:1px solid var(--linea);border-radius:9px;padding:12px;color:var(--tinta)}
-  .modal .m-pie{padding:0 20px 18px;display:flex;gap:9px;justify-content:flex-end}
-  footer{text-align:center;color:var(--gris);font-size:12px;padding:0 24px 30px}
+  .btn.dark{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+  .btn.red{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+  .btn.red:hover{background:var(--rojo-2)}
+  .btn.block{width:100%;border-radius:16px;padding:13px;font-size:15px}
+  .note-demo{font-size:11px;color:#9aa0aa;text-align:center;margin-top:16px;line-height:1.5}
+  header.top{background:#fff;border-bottom:1px solid var(--linea);padding:12px 22px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:20;flex-wrap:wrap}
+  header.top h1{font-size:15.5px;margin:0;font-weight:650;line-height:1.1}
+  header.top .tag{font-size:10.5px;color:var(--gris);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+  .hgroup{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .who{text-align:right;margin-right:4px}
+  .who .n{font-size:13px;font-weight:600} .who .r{font-size:11px;color:var(--gris)}
+  .navbtn{padding:8px 15px;border-radius:999px;font-size:13.5px;font-weight:600;border:0;background:transparent;color:var(--tinta)}
+  .navbtn.on{background:var(--tinta);color:#fff}
+  .lock{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1px solid}
+  .lock.open{background:#e7f7ef;color:#0f9d58;border-color:#bdead2}
+  .lock.closed{background:#fdecec;color:var(--rojo);border-color:#f3c9c9}
+  main{max-width:1180px;margin:0 auto;padding:22px}
+  .row{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  h2.title{font-size:22px;font-weight:350;letter-spacing:-.3px;margin:0}
+  .muted{color:var(--gris);font-size:13px;margin:2px 0 0}
+  .controls{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .grupo-h{display:flex;align-items:center;gap:14px;margin:26px 0 12px}
+  .grupo-h h3{font-size:15px;font-weight:600;color:#4b5563;margin:0;white-space:nowrap}
+  .grupo-h .ln{flex:1;height:1px;background:var(--linea)}
+  .grupo-h .ct{font-size:11px;color:#9aa0aa;font-weight:700}
+  .card{background:#fff;border:1px solid var(--linea);border-radius:24px;padding:20px;box-shadow:var(--sombra);position:relative;display:flex;flex-direction:column}
+  .card.sel{border-color:var(--tinta);box-shadow:0 0 0 1px var(--tinta),var(--sombra)}
+  .card .pchk{position:absolute;top:16px;left:16px}
+  .card .prog{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:4px 9px;border-radius:999px}
+  .prog.M{background:#e8f0fe;color:#2563eb}.prog.D{background:#f3e8fd;color:#7c3aed}
+  .card h4{font-size:18px;font-weight:600;margin:12px 0 2px;padding-right:34px}
+  .card .who2{font-size:11.5px;color:#9aa0aa;margin-bottom:12px;display:flex;gap:6px;align-items:center}
+  .score{font-size:22px;font-weight:300}.score small{font-size:11px;color:#c3c6cc}
+  .bars{display:flex;flex-direction:column;gap:5px;margin:8px 0 14px}
+  .barrow{display:flex;align-items:center;gap:8px}
+  .barrow .bl{font-size:9.5px;color:#9aa0aa;width:54px;text-align:right;flex-shrink:0}
+  .track{flex:1;height:7px;background:#eff0f2;border-radius:5px;overflow:hidden}
+  .track i{display:block;height:100%;border-radius:5px}
+  .verdict{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:6px}
+  .v-beca{background:#e7f7ef;color:#0f9d58}.v-sin{background:#e8f0fe;color:#2563eb}
+  .v-esp{background:#fdf4e3;color:#b8860b}.v-no{background:#fdecec;color:var(--rojo)}
+  .cardfoot{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid var(--linea)}
+  .cardfoot .ln{font-size:10px;color:#9aa0aa;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pencil{position:absolute;top:14px;right:16px;border:0;background:none;color:#c3c6cc;font-size:15px}
+  .pencil:hover{color:var(--azul)}
+  .formwrap{max-width:780px;margin:0 auto}
+  .panel{background:#fff;border:1px solid var(--linea);border-radius:30px;box-shadow:var(--sombra);padding:30px}
+  .crit-card{background:#fafafb;border:1px solid var(--linea);border-radius:20px;padding:16px 18px;margin-bottom:12px}
+  .crit-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .crit-top .max{font-size:10.5px;font-weight:700;color:#9aa0aa;background:#eff0f2;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .slide-row{display:flex;align-items:center;gap:14px;margin-top:12px}
+  input[type=range]{-webkit-appearance:none;height:6px;border-radius:5px;padding:0;background:#e9eaed}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--rojo);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .numbox{width:64px;text-align:center;font-weight:700;padding:8px;border-radius:12px}
+  .totalbar{background:var(--tinta);color:#fff;border-radius:22px;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .totalbar .t{font-size:34px;font-weight:300}.totalbar .t small{font-size:15px;color:#ffffff55}
+  .totalbar .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;color:#ffffff66;font-weight:700}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+  .kpi{background:#fff;border:1px solid var(--linea);border-radius:22px;padding:18px;box-shadow:var(--sombra)}
+  .kpi .k{font-size:10px;font-style:italic;color:#9aa0aa;margin-bottom:5px}
+  .kpi .v{font-size:28px;font-weight:300}.kpi .v.sm{font-size:14px;font-weight:600;line-height:1.25}
+  .chart-card{background:#fff;border:1px solid var(--linea);border-radius:26px;padding:22px;box-shadow:var(--sombra);margin-bottom:18px}
+  .chart-card h3{font-size:17px;font-weight:350;margin:0 0 16px}
+  .chart-box{position:relative;height:300px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:820px){.two{grid-template-columns:1fr}}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.tbl th,table.tbl td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--linea)}
+  table.tbl th{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:#9aa0aa;font-weight:700}
+  .top5{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+  .top5 .t5{background:#fafafb;border:1px solid var(--linea);border-radius:22px;padding:18px;text-align:center}
+  .top5 .rank{width:42px;height:42px;border-radius:50%;background:var(--tinta);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+  .ai-note{background:#f0f6ff;border:1px solid #d6e6ff;border-radius:18px;padding:16px 18px;font-size:13px;color:#42566e;line-height:1.55}
+  .ai-note b{color:#1d3a5f}
+  .seg{display:inline-flex;background:#eceef2;border-radius:14px;padding:4px}
+  .seg button{border:0;background:transparent;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#9aa0aa}
+  .seg button.on{background:#fff;color:var(--tinta);box-shadow:var(--sombra)}
+  .empty{background:#fff;border:1px solid var(--linea);border-radius:24px;padding:50px;text-align:center;color:#9aa0aa}
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="marca">RD</div>
-  <div>
-    <h1>Rúbrica digital · Evaluación de postulantes a posgrado</h1>
-    <p>Apoyo a las comisiones de entrevista y deliberación</p>
-  </div>
-  <span class="pill">Demostración · datos ficticios</span>
-</header>
-
-<div class="controles">
-  <div class="campo">
-    <label for="comision">Comisión</label>
-    <select id="comision">
-      <option>Comisión A · Ciencias Sociales</option>
-      <option>Comisión B · Ciencias Políticas</option>
-      <option>Comisión C · Estudios de Género</option>
-    </select>
-  </div>
-  <div class="campo">
-    <label for="evaluador">Evaluador(a)</label>
-    <input id="evaluador" type="text" placeholder="Nombre de quien evalúa" value="Dra. T. Márquez">
-  </div>
-  <div class="tabs">
-    <button id="tab-rubrica" class="activo" onclick="cambiarVista('rubrica')">Rúbrica</button>
-    <button id="tab-delib" onclick="cambiarVista('delib')">Deliberación</button>
-  </div>
-</div>
-
-<div class="layout">
-  <aside class="panel">
-    <h2>Postulantes</h2>
-    <div class="lista" id="lista"></div>
-  </aside>
-  <main class="panel">
-    <div class="cuerpo" id="contenido"></div>
-  </main>
-</div>
-
-<footer>
-  Versión de demostración con datos ficticios. La herramienta funciona localmente en el navegador y no almacena ni transmite datos.
-</footer>
-
-<div class="modal-bg" id="modal">
-  <div class="modal">
-    <h3>Dictamen generado</h3>
-    <div class="m-cuerpo"><textarea id="dictamen-txt" readonly></textarea></div>
-    <div class="m-pie">
-      <button class="btn" onclick="cerrarModal()">Cerrar</button>
-      <button class="btn primario" onclick="copiarDictamen()">Copiar al portapapeles</button>
-    </div>
-  </div>
-</div>
+<div id="app"></div>
 
 <script>
-const criterios = [
-  {id:'c1', nombre:'Anteproyecto: problema y pertinencia', peso:25},
-  {id:'c2', nombre:'Fundamentación teórica y metodológica', peso:20},
-  {id:'c3', nombre:'Argumentación y comunicación en la entrevista', peso:20},
-  {id:'c4', nombre:'Trayectoria académica', peso:15},
-  {id:'c5', nombre:'Ajuste con las líneas del programa', peso:10},
-  {id:'c6', nombre:'Viabilidad y dedicación', peso:10},
+const RESEARCH_LINES = ['Políticas públicas','Las democracias y sus núcleos problemáticos','Gobernabilidad','Sociología de la cultura','La vida política y social en México','Violencias políticas'];
+const CRITERIA = {
+  cv:'Currículum (CV)',
+  recommendation_letters:'Cartas de recomendación',
+  motivation_letter:'Carta de motivos',
+  research_project:'Proyecto de investigación',
+  theory_interview:'Entrevista: teoría',
+  methodology_interview:'Entrevista: metodología',
+  general_assessment:'Valoración general'
+};
+const SHORT = {cv:'CV',recommendation_letters:'Cartas',motivation_letter:'Motivos',research_project:'Proyecto',theory_interview:'Teoría',methodology_interview:'Metod.',general_assessment:'Gral.'};
+const WEIGHTS = {
+  'Maestría':  {cv:15,recommendation_letters:5,motivation_letter:5,research_project:25,theory_interview:20,methodology_interview:20,general_assessment:10},
+  'Doctorado': {cv:10,recommendation_letters:5,motivation_letter:5,research_project:30,theory_interview:20,methodology_interview:20,general_assessment:10}
+};
+const VERDICTS = ['Aprobado con beca','Aprobado sin beca','Lista de espera','No aprobado'];
+const CRIT_KEYS = Object.keys(CRITERIA);
+
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(20260317);
+
+const SEED = [
+  ['Mariana Ortega Ruiz','Maestría','Políticas públicas',0.93,'Problema bien delimitado y propuesta metodológicamente sólida. Se recomienda su ingreso con beca.'],
+  ['Diego Fuentes Lara','Doctorado','Las democracias y sus núcleos problemáticos',0.90,'Marco teórico robusto y bien situado en el debate contemporáneo.'],
+  ['Sofía Beltrán Mena','Maestría','Sociología de la cultura',0.74,'Tema pertinente, aún por acotar. Buen desempeño en la entrevista.'],
+  ['Andrés Villalobos Cruz','Doctorado','Gobernabilidad',0.58,'Líneas del programa poco articuladas con su propuesta.'],
+  ['Carla Domínguez Iturbide','Maestría','Violencias políticas',0.88,'Perfil coherente con los objetivos del programa.'],
+  ['Pablo Reséndiz Gama','Doctorado','Políticas públicas',0.82,''],
+  ['Lucía Naranjo Vela','Maestría','La vida política y social en México',0.69,'Motivación clara; conviene reforzar el componente metodológico.'],
+  ['Tomás Iglesias Bru','Doctorado','Sociología de la cultura',0.95,'Propuesta original y madurez intelectual destacable.'],
+  ['Renata Quiroga Sol','Maestría','Gobernabilidad',0.63,''],
+  ['Héctor Palacios Rincón','Doctorado','Violencias políticas',0.77,'Sólida formación de base y actitud reflexiva.'],
+  ['Valeria Cordero Maza','Maestría','Las democracias y sus núcleos problemáticos',0.85,''],
+  ['Iván Berlanga Toro','Doctorado','La vida política y social en México',0.52,'Propuesta incipiente; se sugiere lista de espera.'],
+  ['Daniela Escobar Lim','Maestría','Políticas públicas',0.79,'Buen proyecto, comunicación clara en la entrevista.'],
+  ['Mateo Salinas Vega','Doctorado','Sociología de la cultura',0.71,'']
 ];
-
-// datos ficticios, precargados para mostrar el flujo completo
-const postulantes = [
-  {id:1, nombre:'Mariana Ortega Ruiz', programa:'Maestría en Ciencias Sociales',
-    p:{c1:5,c2:4,c3:5,c4:4,c5:5,c6:4}, com:{c1:'Problema bien delimitado y original.',c3:'Muy clara en la entrevista.'}},
-  {id:2, nombre:'Diego Fuentes Lara', programa:'Doctorado en Ciencias Sociales',
-    p:{c1:4,c2:5,c3:4,c4:5,c5:4,c6:4}, com:{c2:'Marco teórico sólido y bien situado.'}},
-  {id:3, nombre:'Sofía Beltrán Mena', programa:'Maestría en Ciencias Sociales',
-    p:{c1:3,c2:3,c3:4,c4:3,c5:3,c6:4}, com:{c1:'Tema pertinente pero poco acotado.'}},
-  {id:4, nombre:'Andrés Villalobos Cruz', programa:'Doctorado en Ciencias Sociales',
-    p:{c1:2,c2:3,c3:3,c4:3,c5:2,c6:3}, com:{c5:'Líneas del programa poco articuladas con su propuesta.'}},
-  {id:5, nombre:'Carla Domínguez Iturbide', programa:'Maestría en Ciencias Sociales',
-    p:{c1:5,c2:4,c3:4,c4:4,c5:4,c6:5}, com:{}},
-];
-
-let vista = 'rubrica';
-let selId = 1;
-
-function totalDe(post){
-  let t = 0;
-  criterios.forEach(c=>{ const s = post.p[c.id]||0; t += (s/5)*c.peso; });
-  return Math.round(t);
-}
-function recomendacion(total){
-  if(total>=80) return {txt:'Aceptado', cls:'b-ok', recCls:'b-ok'};
-  if(total>=65) return {txt:'Aceptado con condiciones', cls:'b-cond', recCls:'b-cond'};
-  return {txt:'No aceptado', cls:'b-no', recCls:'b-no'};
-}
-
-function pintarLista(){
-  const cont = document.getElementById('lista');
-  cont.innerHTML = '';
-  postulantes.forEach(post=>{
-    const tot = totalDe(post);
-    const r = recomendacion(tot);
-    const div = document.createElement('div');
-    div.className = 'post'+(post.id===selId && vista==='rubrica' ? ' sel':'');
-    div.onclick = ()=>{ selId=post.id; if(vista!=='rubrica'){vista='rubrica';sincronizarTabs();} render(); };
-    div.innerHTML = `<div class="info"><div class="nom">${post.nombre}</div>
-      <div class="prog">${post.programa}</div></div>
-      <div class="badge ${r.cls}">${tot}</div>`;
-    cont.appendChild(div);
+let candidates = SEED.map((s,i)=>{
+  const [name,program,line,q,comments]=s;
+  const scores={};
+  CRIT_KEYS.forEach(k=>{
+    const w=WEIGHTS[program][k];
+    const val=Math.max(0.3,Math.min(1,q+(rnd()-0.5)*0.16));
+    scores[k]=Math.round(w*val*10)/10;
   });
-}
+  const total=Math.round(CRIT_KEYS.reduce((a,k)=>a+scores[k],0)*10)/10;
+  let v;
+  if(total>=80)v='Aprobado con beca';else if(total>=70)v='Aprobado sin beca';else if(total>=60)v='Lista de espera';else v='No aprobado';
+  return {id:'c'+(i+1),candidate_name:name,program,research_line:line,interviewer_name:'Comisión '+line.split(' ')[0],scores,total_score:total,final_verdict:v,prelacion:undefined,comments,created_at:new Date(2026,2,1+i).toISOString()};
+});
 
-function vistaRubrica(){
-  const post = postulantes.find(p=>p.id===selId);
-  const tot = totalDe(post);
-  const r = recomendacion(tot);
-  let filas = '';
-  criterios.forEach(c=>{
-    let botones='';
-    for(let n=1;n<=5;n++){
-      botones += `<button class="${post.p[c.id]===n?'on':''}" onclick="setPuntaje('${c.id}',${n})">${n}</button>`;
-    }
-    filas += `<div class="crit-fila">
-      <div><div class="titulo">${c.nombre}</div><div class="peso">Ponderación: ${c.peso}%</div></div>
-      <div class="escala">${botones}</div>
-      <div class="coment"><textarea placeholder="Observaciones (opcional)" oninput="setComentario('${c.id}',this.value)">${post.com[c.id]||''}</textarea></div>
-    </div>`;
-  });
-  return `<div class="enc-post"><h3>${post.nombre}</h3><span class="prog2">${post.programa}</span></div>
-    <div class="crit">${filas}</div>
-    <div class="resumen">
-      <div class="total">${tot}<small>/100</small></div>
-      <div class="rec ${r.recCls}">${r.txt}</div>
-      <div class="acciones">
-        <button class="btn" onclick="reiniciar()">Limpiar</button>
-        <button class="btn primario" onclick="generarDictamen()">Generar dictamen</button>
-      </div>
-    </div>`;
-}
+const S = {view:'login',role:null,line:null,listView:'cronologica',editingEnabled:true,selected:[],editingId:null,reportFilter:'All',form:null,_loginRole:'admin'};
+let charts=[];
+function destroyCharts(){charts.forEach(c=>{try{c.destroy()}catch(e){}});charts=[]}
 
-function vistaDeliberacion(){
-  const orden = [...postulantes].sort((a,b)=>totalDe(b)-totalDe(a));
-  let filas='';
-  orden.forEach((post,i)=>{
-    const tot=totalDe(post); const r=recomendacion(tot);
-    filas += `<tr>
-      <td>${i+1}</td>
-      <td><strong>${post.nombre}</strong><br><span style="color:var(--gris);font-size:12.5px">${post.programa}</span></td>
-      <td><div class="barra"><span style="width:${tot}%"></span></div></td>
-      <td><strong>${tot}</strong>/100</td>
-      <td><span class="badge ${r.cls}">${r.txt}</span></td>
-    </tr>`;
+const verdictClass=v=>v==='Aprobado con beca'?'v-beca':v==='Aprobado sin beca'?'v-sin':v==='Lista de espera'?'v-esp':'v-no';
+const barColor=p=>p>=80?'#10b981':p>=60?'#f59e0b':'#ef4444';
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+function visibleCandidates(){
+  if(S.role==='admin')return candidates;
+  return candidates.filter(c=>c.research_line===S.line);
+}
+function withBecaLimit(list){
+  const sorted=[...list].sort((a,b)=>b.total_score-a.total_score);
+  const out=[];const count={'Maestría':0,'Doctorado':0};
+  ['Maestría','Doctorado'].forEach(p=>{
+    sorted.filter(c=>c.program===p).forEach(c=>{
+      let v=c.final_verdict;
+      if(v==='Aprobado con beca'){ if(count[p]<6)count[p]++; else v='Lista de espera'; }
+      out.push({...c,final_verdict:v});
+    });
   });
-  return `<div class="enc-post"><h3>Cuadro de deliberación</h3>
-      <span class="prog2">Comparativo de la comisión · ordenado por puntaje</span></div>
-    <table class="delib" style="margin-top:14px">
-      <thead><tr><th>#</th><th>Postulante</th><th>Puntaje</th><th>Total</th><th>Recomendación</th></tr></thead>
-      <tbody>${filas}</tbody>
-    </table>`;
+  return out;
 }
 
 function render(){
-  pintarLista();
-  document.getElementById('contenido').innerHTML =
-    vista==='rubrica' ? vistaRubrica() : vistaDeliberacion();
-}
-function setPuntaje(cid,n){ postulantes.find(p=>p.id===selId).p[cid]=n; render(); }
-function setComentario(cid,v){ postulantes.find(p=>p.id===selId).com[cid]=v; }
-function reiniciar(){
-  const post = postulantes.find(p=>p.id===selId);
-  post.p={}; post.com={}; render();
-}
-function cambiarVista(v){ vista=v; sincronizarTabs(); render(); }
-function sincronizarTabs(){
-  document.getElementById('tab-rubrica').classList.toggle('activo',vista==='rubrica');
-  document.getElementById('tab-delib').classList.toggle('activo',vista==='delib');
+  destroyCharts();
+  const app=document.getElementById('app');
+  if(S.view==='login'){app.innerHTML=loginScreen();return;}
+  app.innerHTML = headerBar() + '<main>'+(
+    S.view==='list'?listScreen(): S.view==='form'?formScreen(): reportScreen()
+  )+'</main>';
+  if(S.view==='report')requestAnimationFrame(buildReportCharts);
 }
 
-function generarDictamen(){
-  const post = postulantes.find(p=>p.id===selId);
-  const tot = totalDe(post); const r = recomendacion(tot);
-  const com = document.getElementById('comision').value;
-  const ev = document.getElementById('evaluador').value || '(sin nombre)';
-  let txt = `DICTAMEN DE EVALUACIÓN\n`;
-  txt += `Postulante: ${post.nombre}\nPrograma: ${post.programa}\n`;
-  txt += `${com}\nEvaluador(a): ${ev}\n`;
-  txt += `Fecha: ${new Date().toLocaleDateString('es-MX')}\n`;
-  txt += `\n--- Puntajes por criterio ---\n`;
-  criterios.forEach(c=>{
-    const s = post.p[c.id]||0;
-    txt += `• ${c.nombre} (${c.peso}%): ${s}/5`;
-    if(post.com[c.id]) txt += `\n   Obs.: ${post.com[c.id]}`;
-    txt += `\n`;
-  });
-  txt += `\nPuntaje total ponderado: ${tot}/100\n`;
-  txt += `Recomendación: ${r.txt.toUpperCase()}\n`;
-  document.getElementById('dictamen-txt').value = txt;
-  document.getElementById('modal').classList.add('abierto');
+function loginScreen(){
+  const prof = S._loginRole==='professor';
+  return `<div class="login-wrap"><div class="login-card">
+    <div style="text-align:center">
+      <span class="ibero" style="font-size:24px">IBERO</span>
+      <h1>Posgrado en ciencias sociales y políticas</h1>
+      <p class="sub">Rúbrica digital de admisión 2026</p>
+    </div>
+    <div class="field"><label class="lbl">Rol</label>
+      <select id="lg-role" onchange="S._loginRole=this.value;render()">
+        <option value="admin"${!prof?' selected':''}>Coordinadora</option>
+        <option value="professor"${prof?' selected':''}>Profesor(a) evaluador(a)</option>
+      </select></div>
+    ${prof?`<div class="field"><label class="lbl">Línea de investigación</label>
+      <select id="lg-line">${RESEARCH_LINES.map(l=>`<option>${l}</option>`).join('')}</select></div>`:''}
+    <button class="btn red block" onclick="doLogin()">Entrar a la demostración</button>
+    <p class="note-demo"><span class="demo-pill">Demostración · datos ficticios</span><br>
+    Sin contraseña real. La autenticación, el análisis con IA y la base de datos están simulados; en la versión real se usan cuenta institucional, Firebase y un agente de IA.</p>
+  </div></div>`;
 }
-function cerrarModal(){ document.getElementById('modal').classList.remove('abierto'); }
-function copiarDictamen(){
-  const ta = document.getElementById('dictamen-txt');
-  ta.select();
-  try{ navigator.clipboard.writeText(ta.value); }catch(e){ document.execCommand('copy'); }
-  const b = event.target; const t=b.textContent; b.textContent='Copiado ✓';
-  setTimeout(()=>b.textContent=t,1400);
+function doLogin(){
+  const role=document.getElementById('lg-role').value;
+  S.role=role; S.view='list'; S.selected=[];
+  if(role==='professor'){S.line=document.getElementById('lg-line').value;}
+  else S.line=null;
+  render();
+}
+function logout(){S.view='login';S.role=null;S.line=null;S.selected=[];render();}
+
+function headerBar(){
+  const admin=S.role==='admin';
+  return `<header class="top">
+    <span class="ibero">IBERO</span>
+    <div><h1>Posgrado en ciencias sociales y políticas</h1><div class="tag">Rúbrica digital · admisión 2026</div></div>
+    <div class="hgroup">
+      ${admin?`<button class="lock ${S.editingEnabled?'open':'closed'}" onclick="S.editingEnabled=!S.editingEnabled;render()">${S.editingEnabled?'● Edición abierta':'■ Edición cerrada'}</button>`:''}
+      <div class="who"><div class="n">${admin?'Coordinadora':'Profesor(a) evaluador(a)'}</div><div class="r">${admin?'Acceso total':esc(S.line)}</div></div>
+      <button class="btn" onclick="logout()">Salir</button>
+      <button class="navbtn ${S.view==='list'?'on':''}" onclick="S.view='list';render()">Lista</button>
+      ${admin?`<button class="navbtn ${S.view==='report'?'on':''}" onclick="S.view='report';render()">Reporte</button>`:''}
+      ${(admin||S.editingEnabled)?`<button class="btn red" onclick="newEval()">+ Nueva evaluación</button>`:''}
+    </div>
+  </header>`;
+}
+
+function miniBars(c){
+  return `<div class="bars">${CRIT_KEYS.map(k=>{
+    const p=Math.round((c.scores[k]/WEIGHTS[c.program][k])*100);
+    return `<div class="barrow"><span class="bl">${SHORT[k]}</span><div class="track"><i style="width:${p}%;background:${barColor(p)}"></i></div></div>`;
+  }).join('')}</div>`;
+}
+function card(c){
+  const admin=S.role==='admin';
+  const seld=S.selected.includes(c.id);
+  return `<div class="card ${seld?'sel':''}">
+    <input class="pchk" type="checkbox" ${seld?'checked':''} onclick="toggleSel('${c.id}')" title="Comparar">
+    ${(admin||S.editingEnabled)?`<button class="pencil" onclick="editEval('${c.id}')" title="Editar">✎</button>`:''}
+    <div><span class="prog ${c.program==='Maestría'?'M':'D'}">${c.program}</span></div>
+    <h4>${esc(c.candidate_name)}</h4>
+    <div class="who2">👤 ${esc(c.interviewer_name)}</div>
+    ${miniBars(c)}
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="verdict ${verdictClass(c.final_verdict)}">${c.final_verdict}</span>
+      <span class="score">${c.total_score}<small>/100</small></span>
+    </div>
+    <div class="cardfoot"><span class="ln" title="${esc(c.research_line)}">${esc(c.research_line)}</span>
+      ${c.prelacion?`<span style="font-size:10px;font-weight:700;color:#6b7280">Prelación ${c.prelacion}</span>`:''}</div>
+  </div>`;
+}
+function groupsFor(view,list){
+  const byScore=(a,b)=>b.total_score-a.total_score;
+  if(view==='academica'||view==='administrativa'){
+    const g={};['Doctorado','Maestría'].forEach(p=>{const it=list.filter(c=>c.program===p).sort(byScore);if(it.length)g[p]=it;});return g;
+  }
+  if(view==='por_linea'){const g={};RESEARCH_LINES.forEach(l=>{const it=list.filter(c=>c.research_line===l);if(it.length)g[l]=it;});return g;}
+  if(view==='por_dictamen'){const g={};VERDICTS.forEach(v=>{const it=list.filter(c=>c.final_verdict===v);if(it.length)g[v]=it;});return g;}
+  if(view==='beca_secithi'){
+    const lim=withBecaLimit(list);const g={};
+    ['Doctorado','Maestría'].forEach(p=>{
+      const it=lim.filter(c=>c.program===p).sort(byScore);
+      const beca=it.filter(c=>c.final_verdict==='Aprobado con beca');
+      const resto=it.filter(c=>c.final_verdict!=='Aprobado con beca');
+      if(beca.length)g[p+': beca SECITHI']=beca;
+      if(resto.length)g[p+': lista de espera / otros']=resto;
+    });return g;
+  }
+  return null;
+}
+function listScreen(){
+  const list=visibleCandidates();
+  const admin=S.role==='admin';
+  const opts=[['cronologica','Cronológica'],['academica','Académica'],['administrativa','Administrativa']]
+    .concat(admin?[['por_linea','Por línea'],['por_dictamen','Por dictamen'],['beca_secithi','Beca SECITHI']]:[]);
+  let body='';
+  if(list.length===0){body=`<div class="empty">No hay evaluaciones registradas en esta línea.</div>`;}
+  else{
+    const grouped=groupsFor(S.listView,list);
+    if(!grouped){
+      const sorted=[...list].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+      body=`<div class="grid">${sorted.map(card).join('')}</div>`;
+    }else{
+      body=Object.entries(grouped).map(([g,items])=>`<div class="grupo-h"><h3>${esc(g)}</h3><div class="ln"></div><span class="ct">${items.length} registros</span></div><div class="grid">${items.map(card).join('')}</div>`).join('');
+    }
+  }
+  return `<div class="row">
+    <div><h2 class="title">Personas candidatas evaluadas</h2><p class="muted">Mostrando ${list.length} registros${admin?'':' · '+esc(S.line)}</p></div>
+    <div class="controls">
+      <div><label class="lbl">Visualización</label>
+        <select onchange="S.listView=this.value;render()">${opts.map(o=>`<option value="${o[0]}"${S.listView===o[0]?' selected':''}>${o[1]}</option>`).join('')}</select></div>
+      <button class="btn" onclick="exportCSV()">⬇ Descargar CSV</button>
+      ${S.selected.length?`<button class="btn red" onclick="S.view='report';render()">▥ Comparar (${S.selected.length})</button>`:''}
+    </div>
+  </div>${body}`;
+}
+function toggleSel(id){S.selected=S.selected.includes(id)?S.selected.filter(x=>x!==id):[...S.selected,id];render();}
+
+function blankForm(){return {candidate_name:'',program:'Maestría',research_line:S.role==='professor'?S.line:RESEARCH_LINES[0],interviewer_name:'',final_verdict:'Aprobado con beca',prelacion:'',comments:'',scores:Object.fromEntries(CRIT_KEYS.map(k=>[k,0]))};}
+function newEval(){S.editingId=null;S.form=blankForm();S.view='form';render();}
+function editEval(id){const c=candidates.find(x=>x.id===id);S.editingId=id;S.form=JSON.parse(JSON.stringify(c));S.view='form';render();}
+function formTotal(){return Math.round(CRIT_KEYS.reduce((a,k)=>a+(Number(S.form.scores[k])||0),0)*10)/10;}
+function setScore(k,v){S.form.scores[k]=Number(v)||0;document.getElementById('ftotal').textContent=formTotal().toFixed(1);
+  const w=WEIGHTS[S.form.program][k];const pct=(S.form.scores[k]/w)*100;
+  const sl=document.getElementById('sl-'+k);if(sl)sl.style.background=`linear-gradient(to right,${barColor(pct)} ${pct}%,#e9eaed ${pct}%)`;
+  const nb=document.getElementById('nb-'+k);if(nb&&nb.value!=String(v))nb.value=v;}
+function formScreen(){
+  const f=S.form;const W=WEIGHTS[f.program];
+  return `<div class="formwrap">
+    <button class="btn" style="margin-bottom:14px" onclick="S.view='list';render()">← Volver a la lista</button>
+    <div class="panel">
+      <h2 class="title" style="margin-bottom:4px">${S.editingId?'Editar evaluación':'Nueva evaluación'}</h2>
+      <p class="muted" style="margin-bottom:22px">Complete la rúbrica para la persona candidata.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="field"><label class="lbl">Nombre de la persona candidata</label><input id="f-name" value="${esc(f.candidate_name)}" oninput="S.form.candidate_name=this.value" placeholder="Ej. Juan Pérez"></div>
+        <div class="field"><label class="lbl">Programa</label><select id="f-prog" onchange="S.form.program=this.value;render()"><option${f.program==='Maestría'?' selected':''}>Maestría</option><option${f.program==='Doctorado'?' selected':''}>Doctorado</option></select></div>
+      </div>
+      <div class="field"><label class="lbl">Línea de investigación</label><select onchange="S.form.research_line=this.value"${S.role==='professor'?' disabled':''}>${RESEARCH_LINES.map(l=>`<option${f.research_line===l?' selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="field"><label class="lbl">Entrevistadores/as</label><input value="${esc(f.interviewer_name)}" oninput="S.form.interviewer_name=this.value" placeholder="Nombres separados por comas"></div>
+      <h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:#6b7280;margin:22px 0 14px">Puntajes de la rúbrica <span style="text-transform:none;color:#9aa0aa">(el máximo cambia según el programa)</span></h3>
+      ${CRIT_KEYS.map(k=>{const v=f.scores[k];const pct=(v/W[k])*100;return `
+        <div class="crit-card">
+          <div class="crit-top"><label style="font-weight:600;font-size:14px">${CRITERIA[k]}</label><span class="max">Máx: ${W[k]}</span></div>
+          <div class="slide-row">
+            <input id="sl-${k}" type="range" min="0" max="${W[k]}" step="0.1" value="${v}" style="flex:1;background:linear-gradient(to right,${barColor(pct)} ${pct}%,#e9eaed ${pct}%)" oninput="setScore('${k}',this.value)">
+            <input id="nb-${k}" class="numbox" type="number" min="0" max="${W[k]}" step="0.1" value="${v}" oninput="setScore('${k}',this.value)">
+          </div>
+        </div>`;}).join('')}
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:8px">
+        <div class="field"><label class="lbl">Dictamen final</label><select onchange="S.form.final_verdict=this.value">${VERDICTS.map(v=>`<option${f.final_verdict===v?' selected':''}>${v}</option>`).join('')}</select></div>
+        <div class="field"><label class="lbl">Prelación (interna)</label><select onchange="S.form.prelacion=this.value"><option value="">No definida</option>${[...Array(20)].map((_,i)=>`<option${String(f.prelacion)==String(i+1)?' selected':''}>${i+1}</option>`).join('')}</select></div>
+      </div>
+      <div class="field"><label class="lbl">Comentarios al colegio / dictamen razonado</label><textarea rows="6" oninput="S.form.comments=this.value" placeholder="Dictamen extenso y razonado...">${esc(f.comments)}</textarea></div>
+      <div class="totalbar"><div><div class="l">Puntaje total</div><div class="t" id="ftotal">${formTotal().toFixed(1)}</div></div>
+        <button class="btn red" style="padding:13px 26px" onclick="saveEval()">${S.editingId?'Actualizar evaluación':'Guardar evaluación'}</button></div>
+    </div></div>`;
+}
+function saveEval(){
+  const f=S.form;f.total_score=formTotal();
+  if(!f.candidate_name.trim()){alert('Indica el nombre de la persona candidata.');return;}
+  if(S.editingId){const i=candidates.findIndex(c=>c.id===S.editingId);candidates[i]={...candidates[i],...f,prelacion:f.prelacion||undefined};}
+  else{candidates.push({...f,id:'c'+Date.now(),prelacion:f.prelacion||undefined,created_at:new Date().toISOString()});}
+  S.view='list';render();
+}
+
+function reportData(){
+  let list=withBecaLimit(candidates);
+  if(S.reportFilter!=='All')list=list.filter(c=>c.program===S.reportFilter);
+  return list;
+}
+function reportScreen(){
+  const data=reportData();
+  const n=data.length;
+  const avg=n?(data.reduce((a,c)=>a+c.total_score,0)/n).toFixed(1):'0';
+  const top=n?Math.max(...data.map(c=>c.total_score)):0;
+  const acc=n?Math.round(data.filter(c=>c.final_verdict!=='No aprobado').length/n*100):0;
+  const lineCounts={};data.forEach(c=>lineCounts[c.research_line]=(lineCounts[c.research_line]||0)+1);
+  const topLine=Object.entries(lineCounts).sort((a,b)=>b[1]-a[1])[0];
+  const top5=[...data].sort((a,b)=>b.total_score-a.total_score).slice(0,5);
+  const sel=S.selected.map(id=>candidates.find(c=>c.id===id)).filter(Boolean);
+  const lines=[...new Set(data.map(c=>c.research_line))];
+  const tabla=lines.map(l=>{const it=data.filter(c=>c.research_line===l);const sc=it.map(c=>c.total_score);
+    const vc={};it.forEach(c=>vc[c.final_verdict]=(vc[c.final_verdict]||0)+1);
+    const freq=Object.entries(vc).sort((a,b)=>b[1]-a[1])[0][0];
+    return {l,n:it.length,avg:(sc.reduce((a,b)=>a+b,0)/it.length).toFixed(1),max:Math.max(...sc).toFixed(1),min:Math.min(...sc).toFixed(1),freq};
+  }).sort((a,b)=>b.n-a.n);
+
+  return `<div class="row">
+    <div><h2 class="title">Reporte cuantitativo y cualitativo</h2><p class="muted">Análisis integral para la junta de admisión</p></div>
+    <div class="controls" style="align-items:center">
+      <div class="seg">${['All','Maestría','Doctorado'].map(p=>`<button class="${S.reportFilter===p?'on':''}" onclick="S.reportFilter='${p}';render()">${p==='All'?'Todos':p}</button>`).join('')}</div>
+      <button class="btn" onclick="exportCSV()">⬇ CSV</button>
+      <button class="btn dark" onclick="window.print()">⎙ Imprimir / PDF</button>
+    </div>
+  </div>
+  ${sel.length?`<div class="chart-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Comparativa de perfiles seleccionados (${sel.length})</h3><button class="btn" onclick="S.selected=[];render()">Limpiar</button></div><div class="chart-box" style="height:360px;margin-top:10px"><canvas id="ch-radar"></canvas></div></div>`:''}
+  <div class="kpis">
+    <div class="kpi"><div class="k">Total de evaluaciones</div><div class="v">${n}</div></div>
+    <div class="kpi"><div class="k">Promedio general</div><div class="v">${avg}</div></div>
+    <div class="kpi"><div class="k">Puntaje más alto</div><div class="v">${top}</div></div>
+    <div class="kpi"><div class="k">Tasa de aceptación</div><div class="v">${acc}%</div></div>
+    <div class="kpi"><div class="k">Línea más demandada</div><div class="v sm">${topLine?esc(topLine[0]):'N/A'}</div></div>
+  </div>
+  <div class="two">
+    <div class="chart-card"><h3>Cumplimiento promedio por criterio (%)</h3><div class="chart-box"><canvas id="ch-crit"></canvas></div></div>
+    <div class="chart-card"><h3>Distribución de dictámenes</h3><div class="chart-box"><canvas id="ch-verd"></canvas></div></div>
+  </div>
+  <div class="chart-card"><h3>Puntaje promedio por línea de investigación</h3><div class="chart-box" style="height:340px"><canvas id="ch-line"></canvas></div></div>
+  <div class="chart-card"><h3>Top 5 de personas candidatas</h3>
+    <div class="top5">${top5.map((c,i)=>`<div class="t5"><div class="rank">${i+1}</div><div style="font-weight:600;font-size:13px">${esc(c.candidate_name)}</div><div style="font-size:10px;text-transform:uppercase;color:#9aa0aa;font-weight:700;margin:3px 0 8px">${c.program}</div><div style="font-size:26px;font-weight:300">${c.total_score}</div></div>`).join('')}</div></div>
+  <div class="chart-card"><h3>Análisis por línea de investigación</h3>
+    <table class="tbl"><thead><tr><th>Línea</th><th>Cand.</th><th>Promedio</th><th>Máx</th><th>Mín</th><th>Dictamen frecuente</th></tr></thead>
+    <tbody>${tabla.map(r=>`<tr><td style="font-weight:600">${esc(r.l)}</td><td>${r.n}</td><td style="font-weight:700">${r.avg}</td><td style="color:#0f9d58">${r.max}</td><td style="color:#ef4444">${r.min}</td><td><span class="verdict ${verdictClass(r.freq)}">${r.freq}</span></td></tr>`).join('')}</tbody></table></div>
+  <div class="chart-card"><h3>Interpretación cualitativa</h3>
+    <div class="ai-note"><b>Nota de la demostración:</b> en la versión real, un agente de IA (Gemini) redacta aquí un informe que sintetiza los comentarios de las comisiones, las tendencias por línea y las áreas de oportunidad del grupo, antes de la junta del colegio. En esta demo el texto se omite por no incluir claves de servicios externos.</div></div>`;
+}
+function buildReportCharts(){
+  const data=reportData();
+  const grid={color:'#f0f0f0'};const tickF={font:{size:10}};
+  const critAvg=CRIT_KEYS.map(k=>{const arr=data.map(c=>(c.scores[k]/WEIGHTS[c.program][k])*100);return arr.reduce((a,b)=>a+b,0)/(arr.length||1);});
+  const cc=document.getElementById('ch-crit');
+  if(cc)charts.push(new Chart(cc,{type:'bar',data:{labels:CRIT_KEYS.map(k=>SHORT[k]),datasets:[{data:critAvg.map(v=>Math.round(v)),backgroundColor:critAvg.map(v=>barColor(v)),borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,grid,ticks:tickF},y:{grid:{display:false},ticks:tickF}},maintainAspectRatio:false}}));
+  const vc={};data.forEach(c=>vc[c.final_verdict]=(vc[c.final_verdict]||0)+1);
+  const vColors={'Aprobado con beca':'#10b981','Aprobado sin beca':'#3b82f6','Lista de espera':'#f59e0b','No aprobado':'#ef4444'};
+  const cv=document.getElementById('ch-verd');
+  if(cv)charts.push(new Chart(cv,{type:'doughnut',data:{labels:Object.keys(vc),datasets:[{data:Object.values(vc),backgroundColor:Object.keys(vc).map(k=>vColors[k]),borderWidth:2,borderColor:'#fff'}]},
+    options:{cutout:'62%',plugins:{legend:{position:'bottom',labels:{font:{size:11},usePointStyle:true,boxWidth:8}}},maintainAspectRatio:false}}));
+  const lc={};data.forEach(c=>{(lc[c.research_line]=lc[c.research_line]||[]).push(c.total_score)});
+  const lines=Object.keys(lc);const lavg=lines.map(l=>lc[l].reduce((a,b)=>a+b,0)/lc[l].length);
+  const cl=document.getElementById('ch-line');
+  if(cl)charts.push(new Chart(cl,{type:'bar',data:{labels:lines,datasets:[{data:lavg.map(v=>Math.round(v*10)/10),backgroundColor:'#C8102E',borderRadius:6}]},
+    options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{max:100,grid,ticks:tickF},y:{grid:{display:false},ticks:{font:{size:10}}}},maintainAspectRatio:false}}));
+  const sel=S.selected.map(id=>candidates.find(c=>c.id===id)).filter(Boolean);
+  const cr=document.getElementById('ch-radar');
+  if(cr&&sel.length){
+    const palette=['#C8102E','#10b981','#3b82f6','#f59e0b','#8b5cf6'];
+    charts.push(new Chart(cr,{type:'radar',data:{labels:CRIT_KEYS.map(k=>SHORT[k]),datasets:sel.map((c,i)=>({label:c.candidate_name,data:CRIT_KEYS.map(k=>Math.round((c.scores[k]/WEIGHTS[c.program][k])*100)),borderColor:palette[i%5],backgroundColor:palette[i%5]+'22',borderWidth:2}))},
+      options:{scales:{r:{min:0,max:100,ticks:{display:false},pointLabels:{font:{size:11}}}},plugins:{legend:{position:'bottom',labels:{font:{size:11},usePointStyle:true,boxWidth:8}}},maintainAspectRatio:false}}));
+  }
+}
+
+function exportCSV(){
+  const list=S.role==='admin'?candidates:visibleCandidates();
+  const headers=['ID','Candidato/a','Programa','Línea','CV','Cartas','Motivos','Proyecto','Teoría','Metodología','General','Total','Dictamen','Prelación','Entrevistadores','Fecha'];
+  const q=s=>`"${String(s==null?'':s).replace(/"/g,'""')}"`;
+  const rows=list.map(c=>[c.id,q(c.candidate_name),q(c.program),q(c.research_line),c.scores.cv,c.scores.recommendation_letters,c.scores.motivation_letter,c.scores.research_project,c.scores.theory_interview,c.scores.methodology_interview,c.scores.general_assessment,c.total_score,q(c.final_verdict),c.prelacion||'No definida',q(c.interviewer_name),q(c.created_at)].join(','));
+  const csv='\uFEFF'+[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='evaluaciones_posgrado_demo.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
 render();
