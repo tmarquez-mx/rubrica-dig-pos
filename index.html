@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rúbrica digital · Evaluación de postulantes a posgrado</title>
+<style>
+  :root{
+    --rojo:#b3123a; --rojo-2:#8e0e2e; --tinta:#1d2430; --gris:#5b6573;
+    --linea:#e6e8ec; --fondo:#f5f6f8; --tarjeta:#ffffff;
+    --verde:#1f8a4c; --ambar:#b8860b; --gris-rec:#7a8595;
+    --sombra:0 1px 3px rgba(20,30,50,.07),0 6px 18px rgba(20,30,50,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--tinta);background:var(--fondo);line-height:1.45}
+  header.top{background:var(--tarjeta);border-bottom:1px solid var(--linea);padding:16px 24px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .marca{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--rojo),var(--rojo-2));
+    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;letter-spacing:.5px}
+  header.top h1{font-size:17px;margin:0;font-weight:650}
+  header.top p{margin:2px 0 0;font-size:12.5px;color:var(--gris)}
+  .pill{margin-left:auto;background:#fff4f6;color:var(--rojo);border:1px solid #f3c9d4;
+    font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:999px}
+  .controles{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;padding:16px 24px 6px}
+  .campo label{display:block;font-size:11.5px;color:var(--gris);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+  .campo select,.campo input{font:inherit;font-size:14px;padding:8px 11px;border:1px solid var(--linea);
+    border-radius:8px;background:#fff;min-width:230px;color:var(--tinta)}
+  .tabs{margin-left:auto;display:flex;gap:6px;background:#eceef2;padding:4px;border-radius:10px}
+  .tabs button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--gris);
+    padding:7px 14px;border-radius:7px;cursor:pointer}
+  .tabs button.activo{background:#fff;color:var(--tinta);box-shadow:var(--sombra)}
+  .layout{display:grid;grid-template-columns:300px 1fr;gap:20px;padding:14px 24px 40px;align-items:start}
+  @media(max-width:840px){.layout{grid-template-columns:1fr}}
+  .panel{background:var(--tarjeta);border:1px solid var(--linea);border-radius:14px;box-shadow:var(--sombra)}
+  .panel h2{font-size:13px;text-transform:uppercase;letter-spacing:.5px;color:var(--gris);
+    margin:0;padding:15px 18px;border-bottom:1px solid var(--linea)}
+  .lista{display:flex;flex-direction:column}
+  .post{display:flex;align-items:center;gap:11px;padding:13px 16px;border-bottom:1px solid var(--linea);
+    cursor:pointer;transition:background .12s}
+  .post:last-child{border-bottom:0}
+  .post:hover{background:#fafbfc}
+  .post.sel{background:#fdeef2;box-shadow:inset 3px 0 0 var(--rojo)}
+  .post .info{flex:1;min-width:0}
+  .post .nom{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .post .prog{font-size:12px;color:var(--gris);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .badge{font-size:13px;font-weight:700;padding:3px 9px;border-radius:7px;min-width:42px;text-align:center}
+  .b-ok{background:#e7f5ed;color:var(--verde)} .b-cond{background:#fbf3e0;color:var(--ambar)} .b-no{background:#fdecec;color:var(--rojo)} .b-na{background:#eef0f3;color:var(--gris-rec)}
+  .cuerpo{padding:20px 22px}
+  .enc-post{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+  .enc-post h3{margin:0;font-size:20px}
+  .enc-post .prog2{color:var(--gris);font-size:14px}
+  .crit{border:1px solid var(--linea);border-radius:11px;margin-top:16px;overflow:hidden}
+  .crit-fila{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px 16px;border-bottom:1px solid var(--linea)}
+  .crit-fila:last-child{border-bottom:0}
+  .crit-fila .titulo{font-weight:600;font-size:14.5px}
+  .crit-fila .peso{font-size:12px;color:var(--gris);margin-top:2px}
+  .escala{display:flex;gap:6px}
+  .escala button{width:34px;height:34px;border:1px solid var(--linea);background:#fff;border-radius:8px;
+    font:inherit;font-weight:600;font-size:14px;color:var(--gris);cursor:pointer;transition:.1s}
+  .escala button:hover{border-color:#c9ccd2}
+  .escala button.on{background:var(--rojo);border-color:var(--rojo);color:#fff}
+  .coment{grid-column:1/-1;margin-top:10px}
+  .coment textarea{width:100%;font:inherit;font-size:13.5px;padding:9px 11px;border:1px solid var(--linea);
+    border-radius:8px;resize:vertical;min-height:42px;color:var(--tinta)}
+  .resumen{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:20px;padding:16px 18px;
+    background:#fafbfc;border:1px solid var(--linea);border-radius:12px}
+  .total{font-size:34px;font-weight:750;line-height:1}
+  .total small{font-size:15px;color:var(--gris);font-weight:600}
+  .rec{font-size:14px;font-weight:700;padding:7px 14px;border-radius:9px}
+  .acciones{margin-left:auto;display:flex;gap:9px}
+  .btn{font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--linea);background:#fff;
+    padding:9px 15px;border-radius:9px;cursor:pointer;color:var(--tinta)}
+  .btn.primario{background:var(--rojo);border-color:var(--rojo);color:#fff}
+  .btn:hover{filter:brightness(.98)}
+  table.delib{width:100%;border-collapse:collapse;font-size:14px}
+  table.delib th,table.delib td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--linea)}
+  table.delib th{font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--gris)}
+  table.delib tr:last-child td{border-bottom:0}
+  .barra{height:7px;background:#eceef2;border-radius:5px;overflow:hidden;min-width:90px}
+  .barra span{display:block;height:100%;background:var(--rojo)}
+  .modal-bg{position:fixed;inset:0;background:rgba(20,28,42,.45);display:none;align-items:center;
+    justify-content:center;padding:20px;z-index:50}
+  .modal-bg.abierto{display:flex}
+  .modal{background:#fff;border-radius:14px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  .modal h3{margin:0;padding:18px 20px;border-bottom:1px solid var(--linea);font-size:16px}
+  .modal .m-cuerpo{padding:18px 20px}
+  .modal textarea{width:100%;height:230px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;
+    border:1px solid var(--linea);border-radius:9px;padding:12px;color:var(--tinta)}
+  .modal .m-pie{padding:0 20px 18px;display:flex;gap:9px;justify-content:flex-end}
+  footer{text-align:center;color:var(--gris);font-size:12px;padding:0 24px 30px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="marca">RD</div>
+  <div>
+    <h1>Rúbrica digital · Evaluación de postulantes a posgrado</h1>
+    <p>Apoyo a las comisiones de entrevista y deliberación</p>
+  </div>
+  <span class="pill">Demostración · datos ficticios</span>
+</header>
+
+<div class="controles">
+  <div class="campo">
+    <label for="comision">Comisión</label>
+    <select id="comision">
+      <option>Comisión A · Ciencias Sociales</option>
+      <option>Comisión B · Ciencias Políticas</option>
+      <option>Comisión C · Estudios de Género</option>
+    </select>
+  </div>
+  <div class="campo">
+    <label for="evaluador">Evaluador(a)</label>
+    <input id="evaluador" type="text" placeholder="Nombre de quien evalúa" value="Dra. T. Márquez">
+  </div>
+  <div class="tabs">
+    <button id="tab-rubrica" class="activo" onclick="cambiarVista('rubrica')">Rúbrica</button>
+    <button id="tab-delib" onclick="cambiarVista('delib')">Deliberación</button>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="panel">
+    <h2>Postulantes</h2>
+    <div class="lista" id="lista"></div>
+  </aside>
+  <main class="panel">
+    <div class="cuerpo" id="contenido"></div>
+  </main>
+</div>
+
+<footer>
+  Versión de demostración con datos ficticios. La herramienta funciona localmente en el navegador y no almacena ni transmite datos.
+</footer>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Dictamen generado</h3>
+    <div class="m-cuerpo"><textarea id="dictamen-txt" readonly></textarea></div>
+    <div class="m-pie">
+      <button class="btn" onclick="cerrarModal()">Cerrar</button>
+      <button class="btn primario" onclick="copiarDictamen()">Copiar al portapapeles</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const criterios = [
+  {id:'c1', nombre:'Anteproyecto: problema y pertinencia', peso:25},
+  {id:'c2', nombre:'Fundamentación teórica y metodológica', peso:20},
+  {id:'c3', nombre:'Argumentación y comunicación en la entrevista', peso:20},
+  {id:'c4', nombre:'Trayectoria académica', peso:15},
+  {id:'c5', nombre:'Ajuste con las líneas del programa', peso:10},
+  {id:'c6', nombre:'Viabilidad y dedicación', peso:10},
+];
+
+// datos ficticios, precargados para mostrar el flujo completo
+const postulantes = [
+  {id:1, nombre:'Mariana Ortega Ruiz', programa:'Maestría en Ciencias Sociales',
+    p:{c1:5,c2:4,c3:5,c4:4,c5:5,c6:4}, com:{c1:'Problema bien delimitado y original.',c3:'Muy clara en la entrevista.'}},
+  {id:2, nombre:'Diego Fuentes Lara', programa:'Doctorado en Ciencias Sociales',
+    p:{c1:4,c2:5,c3:4,c4:5,c5:4,c6:4}, com:{c2:'Marco teórico sólido y bien situado.'}},
+  {id:3, nombre:'Sofía Beltrán Mena', programa:'Maestría en Ciencias Sociales',
+    p:{c1:3,c2:3,c3:4,c4:3,c5:3,c6:4}, com:{c1:'Tema pertinente pero poco acotado.'}},
+  {id:4, nombre:'Andrés Villalobos Cruz', programa:'Doctorado en Ciencias Sociales',
+    p:{c1:2,c2:3,c3:3,c4:3,c5:2,c6:3}, com:{c5:'Líneas del programa poco articuladas con su propuesta.'}},
+  {id:5, nombre:'Carla Domínguez Iturbide', programa:'Maestría en Ciencias Sociales',
+    p:{c1:5,c2:4,c3:4,c4:4,c5:4,c6:5}, com:{}},
+];
+
+let vista = 'rubrica';
+let selId = 1;
+
+function totalDe(post){
+  let t = 0;
+  criterios.forEach(c=>{ const s = post.p[c.id]||0; t += (s/5)*c.peso; });
+  return Math.round(t);
+}
+function recomendacion(total){
+  if(total>=80) return {txt:'Aceptado', cls:'b-ok', recCls:'b-ok'};
+  if(total>=65) return {txt:'Aceptado con condiciones', cls:'b-cond', recCls:'b-cond'};
+  return {txt:'No aceptado', cls:'b-no', recCls:'b-no'};
+}
+
+function pintarLista(){
+  const cont = document.getElementById('lista');
+  cont.innerHTML = '';
+  postulantes.forEach(post=>{
+    const tot = totalDe(post);
+    const r = recomendacion(tot);
+    const div = document.createElement('div');
+    div.className = 'post'+(post.id===selId && vista==='rubrica' ? ' sel':'');
+    div.onclick = ()=>{ selId=post.id; if(vista!=='rubrica'){vista='rubrica';sincronizarTabs();} render(); };
+    div.innerHTML = `<div class="info"><div class="nom">${post.nombre}</div>
+      <div class="prog">${post.programa}</div></div>
+      <div class="badge ${r.cls}">${tot}</div>`;
+    cont.appendChild(div);
+  });
+}
+
+function vistaRubrica(){
+  const post = postulantes.find(p=>p.id===selId);
+  const tot = totalDe(post);
+  const r = recomendacion(tot);
+  let filas = '';
+  criterios.forEach(c=>{
+    let botones='';
+    for(let n=1;n<=5;n++){
+      botones += `<button class="${post.p[c.id]===n?'on':''}" onclick="setPuntaje('${c.id}',${n})">${n}</button>`;
+    }
+    filas += `<div class="crit-fila">
+      <div><div class="titulo">${c.nombre}</div><div class="peso">Ponderación: ${c.peso}%</div></div>
+      <div class="escala">${botones}</div>
+      <div class="coment"><textarea placeholder="Observaciones (opcional)" oninput="setComentario('${c.id}',this.value)">${post.com[c.id]||''}</textarea></div>
+    </div>`;
+  });
+  return `<div class="enc-post"><h3>${post.nombre}</h3><span class="prog2">${post.programa}</span></div>
+    <div class="crit">${filas}</div>
+    <div class="resumen">
+      <div class="total">${tot}<small>/100</small></div>
+      <div class="rec ${r.recCls}">${r.txt}</div>
+      <div class="acciones">
+        <button class="btn" onclick="reiniciar()">Limpiar</button>
+        <button class="btn primario" onclick="generarDictamen()">Generar dictamen</button>
+      </div>
+    </div>`;
+}
+
+function vistaDeliberacion(){
+  const orden = [...postulantes].sort((a,b)=>totalDe(b)-totalDe(a));
+  let filas='';
+  orden.forEach((post,i)=>{
+    const tot=totalDe(post); const r=recomendacion(tot);
+    filas += `<tr>
+      <td>${i+1}</td>
+      <td><strong>${post.nombre}</strong><br><span style="color:var(--gris);font-size:12.5px">${post.programa}</span></td>
+      <td><div class="barra"><span style="width:${tot}%"></span></div></td>
+      <td><strong>${tot}</strong>/100</td>
+      <td><span class="badge ${r.cls}">${r.txt}</span></td>
+    </tr>`;
+  });
+  return `<div class="enc-post"><h3>Cuadro de deliberación</h3>
+      <span class="prog2">Comparativo de la comisión · ordenado por puntaje</span></div>
+    <table class="delib" style="margin-top:14px">
+      <thead><tr><th>#</th><th>Postulante</th><th>Puntaje</th><th>Total</th><th>Recomendación</th></tr></thead>
+      <tbody>${filas}</tbody>
+    </table>`;
+}
+
+function render(){
+  pintarLista();
+  document.getElementById('contenido').innerHTML =
+    vista==='rubrica' ? vistaRubrica() : vistaDeliberacion();
+}
+function setPuntaje(cid,n){ postulantes.find(p=>p.id===selId).p[cid]=n; render(); }
+function setComentario(cid,v){ postulantes.find(p=>p.id===selId).com[cid]=v; }
+function reiniciar(){
+  const post = postulantes.find(p=>p.id===selId);
+  post.p={}; post.com={}; render();
+}
+function cambiarVista(v){ vista=v; sincronizarTabs(); render(); }
+function sincronizarTabs(){
+  document.getElementById('tab-rubrica').classList.toggle('activo',vista==='rubrica');
+  document.getElementById('tab-delib').classList.toggle('activo',vista==='delib');
+}
+
+function generarDictamen(){
+  const post = postulantes.find(p=>p.id===selId);
+  const tot = totalDe(post); const r = recomendacion(tot);
+  const com = document.getElementById('comision').value;
+  const ev = document.getElementById('evaluador').value || '(sin nombre)';
+  let txt = `DICTAMEN DE EVALUACIÓN\n`;
+  txt += `Postulante: ${post.nombre}\nPrograma: ${post.programa}\n`;
+  txt += `${com}\nEvaluador(a): ${ev}\n`;
+  txt += `Fecha: ${new Date().toLocaleDateString('es-MX')}\n`;
+  txt += `\n--- Puntajes por criterio ---\n`;
+  criterios.forEach(c=>{
+    const s = post.p[c.id]||0;
+    txt += `• ${c.nombre} (${c.peso}%): ${s}/5`;
+    if(post.com[c.id]) txt += `\n   Obs.: ${post.com[c.id]}`;
+    txt += `\n`;
+  });
+  txt += `\nPuntaje total ponderado: ${tot}/100\n`;
+  txt += `Recomendación: ${r.txt.toUpperCase()}\n`;
+  document.getElementById('dictamen-txt').value = txt;
+  document.getElementById('modal').classList.add('abierto');
+}
+function cerrarModal(){ document.getElementById('modal').classList.remove('abierto'); }
+function copiarDictamen(){
+  const ta = document.getElementById('dictamen-txt');
+  ta.select();
+  try{ navigator.clipboard.writeText(ta.value); }catch(e){ document.execCommand('copy'); }
+  const b = event.target; const t=b.textContent; b.textContent='Copiado ✓';
+  setTimeout(()=>b.textContent=t,1400);
+}
+
+render();
+</script>
+</body>
+</html>
