@@ -17,7 +17,7 @@
 
 Una aplicación que acompaña a las comisiones de profesores mientras entrevistan y evalúan a quienes aspiran a un posgrado: califican con criterios ponderados, ven el puntaje y la recomendación al instante, y llegan a la junta del colegio con un reporte listo, en lugar de un fajo de rúbricas en papel.
 
-> A diferencia de otros artefactos de TechiholicLabs, de orientación más conceptual, esta herramienta nació de un problema práctico: **ordenar y agilizar la deliberación de admisión**.
+> A diferencia de otros artefactos de [**Techiholic Labs**](https://techiholic.netlify.app/), de orientación más conceptual, esta herramienta nació de un problema práctico: **ordenar y agilizar la deliberación de admisión**.
 
 ---
 
